@@ -1,0 +1,19 @@
+language: python
+
+python:
+ - "3.6"
+
+cache: pip
+
+install:
+ - pip install -r requirements.txt
+ - pip install nose coverage coveralls
+ - pip install sphinx sphinxcontrib-bibtex sphinxcontrib-websupport travis-sphinx
+
+script:
+ - nosetests -v test --with-coverage --cover-package=chainerltr
+ - travis-sphinx build --source=doc
+
+after_success:
+ - coveralls
+ - travis-sphinx deploy 
