@@ -17,6 +17,17 @@ def test_worst_ndcg():
     assert_allclose(ndcg(p, y).data, 0.5475066710714894)
 
 
+def test_perfect_ndcg_no_exp():
+    p = Variable(np.array([0, 1, 2, 3, 4]))
+    y = Variable(np.array([2, 2, 1, 0, 0]))
+    assert_allclose(ndcg(p, y, exp=False).data, 1.0)
+
+
+def test_worst_ndcg_no_exp():
+    p = Variable(np.array([4, 3, 2, 0, 1]))
+    y = Variable(np.array([2, 2, 1, 0, 0]))
+    assert_allclose(ndcg(p, y, exp=False).data, 0.567554085037434)
+
 def test_perfect_ndcg_at_1():
     p = Variable(np.array([0, 1, 2, 3, 4]))
     y = Variable(np.array([2, 2, 1, 0, 0]))
