@@ -10,24 +10,10 @@ def sample_without_replacement(p):
     :return: A random permutation, sampled without replacement with proportional
              probabilities
     """
-
-    # Switch to CPU since xp.random.choice with replace=False is not
-    # currently implemented in cupy, so we resort to numpy
     xp = cuda.get_array_module(p)
-    a = cuda.to_cpu(p.data)
 
-    # Return stacked version of random choice
-    results = []
-    for i in range(a.shape[0]):
-        probabilities = a[i, :]
-        sample = np.random.choice(probabilities.shape[0],
-                                  np.count_nonzero(probabilities),
-                                  replace=False,
-                                  p=probabilities)
-        uniform = np.arange(probabilities.shape[0])
-        uniform = np.setdiff1d(uniform, sample, assume_unique=True)
-        uniform = np.random.permutation(uniform)
-        results.append(np.hstack((sample, uniform)))
-    result = np.stack(results)
-
-    return xp.array(result, copy=False)
+    # We use reservoir sampling, which resorts to doing Uniform(0, 1) ^ (1 / p)
+    # and then sorting by the resulting values
+    r = xp.random.uniform(0.0, 1.0, p.shape) ** (1. / p.data)
+    s = xp.flip(xp.argsort(r, axis=1), axis=1)
+    return s

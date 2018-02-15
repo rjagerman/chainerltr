@@ -56,7 +56,7 @@ def test_listpl():
     nr_docs = Variable(np.array([4, 4], dtype='i'))
 
     result = listpl(x, t, nr_docs)
-    assert_almost_equal(result.data, 3.372779522438729)
+    assert_almost_equal(result.data, 3.337334054791404)
 
 
 def test_listpl_backward():

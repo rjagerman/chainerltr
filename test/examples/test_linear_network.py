@@ -18,7 +18,7 @@ def test_linear_listmle(alpha=0.85, batch_size=1):
 
 def test_linear_listpl(alpha=0.45, batch_size=1):
     final_loss = run_linear_network(listpl, alpha, batch_size)
-    assert_allclose(final_loss, 9.249011357625326, atol=1e-2, rtol=1e-2)
+    assert_allclose(final_loss, 10.088645299275717, atol=1e-2, rtol=1e-2)
 
 
 def test_linear_ranknet(alpha=0.5, batch_size=1):
