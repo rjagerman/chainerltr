@@ -1,4 +1,3 @@
-import numpy as np
 from chainer import cuda
 
 
