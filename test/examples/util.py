@@ -1,10 +1,11 @@
 import numpy as np
-from chainer import Chain, report, Variable, links as L
+from chainer import Chain, report, links as L, functions as F
 from chainer.iterators import SerialIterator
 from chainer.optimizers import Adam
 from chainer.training import Trainer, StandardUpdater, extensions
 from chainerltr import Ranker
 from chainerltr.dataset import zeropad_concat
+from chainerltr.evaluation import ndcg
 from test.test_dataset import get_dataset
 
 
@@ -14,8 +15,11 @@ class Loss(Chain):
         self.loss_fn = loss_fn
 
     def __call__(self, xs, ys, nr_docs):
-        loss = self.loss_fn(self.ranker(xs), ys, nr_docs)
+        prediction = self.ranker(xs)
+        loss = self.loss_fn(prediction, ys, nr_docs)
         report({"loss": loss})
+        ndcg_score = ndcg(prediction, ys, nr_docs)
+        report({"ndcg": F.mean(ndcg_score)})
         return loss
 
 
@@ -40,5 +44,5 @@ def run_linear_network(loss_fn, alpha=0.3, batch_size=2):
     trainer.extend(log_report)
     np.random.seed(42)
     trainer.run()
-    last_loss = log_report.log[-1]['loss']
-    return last_loss
+    last_ndcg = log_report.log[-1]['ndcg']
+    return last_ndcg
