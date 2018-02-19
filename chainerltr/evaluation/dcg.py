@@ -1,7 +1,7 @@
-from chainer import cuda, FunctionNode
+from chainer import cuda, FunctionNode, functions as F
 
 
-class NDCG(FunctionNode):
+class DCG(FunctionNode):
     def __init__(self, k=0, exp=True):
         self.k = k
         self.exp = exp
@@ -19,12 +19,10 @@ class NDCG(FunctionNode):
             return xp.asarray(0.0),
 
         # Compute best_indices by sorting the relevance labels and then flipping
-        predicted_indices = y
-        best_indices = xp.flip(xp.argsort(t), axis=0)
+        predicted_indices = xp.flip(xp.argsort(y), axis=0)
 
         # Select items based on permutations to get relevance grades sorted
         predicted_relevance = t[predicted_indices]
-        best_relevance = t[best_indices]
 
         # Compute needed statistics
         length = predicted_relevance.shape[0]
@@ -35,12 +33,7 @@ class NDCG(FunctionNode):
         # Compute regular DCG
         dcg = self._dcg(predicted_relevance, xp, last)
 
-        # Compute iDCG for normalization
-        idcg = self._dcg(best_relevance, xp, last)
-        if idcg == 0.0:
-            idcg = 1.0
-
-        return xp.asarray(dcg / idcg),
+        return xp.asarray(dcg),
 
     def _dcg(self, relevance, xp, last):
         """
@@ -61,20 +54,38 @@ class NDCG(FunctionNode):
         return xp.sum(dcg_numerator / dcg_denominator)
 
 
-def ndcg(permutation, relevance_labels, k=0, exp=True):
+def dcg(predicted_scores, relevance_scores, k=0, exp=True, nr_docs=None):
     """
-    Computes the nDCG@k for given list of true relevance labels
+    Computes the DCG@k for given list of true relevance labels
     (relevance_labels) and given permutation of documents (permutation)
 
-    :param permutation: The predicted permutation or ranking
-    :param relevance_labels: The ground truth relevance labels
+    :param predicted_scores: The predicted scores for the document
+    :param relevance_scores: The ground truth relevance labels
     :param k: The cut-off point (if set to smaller or equal to 0, it does not
               cut-off)
     :param exp: Set to true to use the exponential variant of nDCG which
                 has a stronger emphasis on retrieving relevant documents
-    :return: The nDCG@k value
+    :param nr_docs: When using 2d-arrays you need to specify a vector of the
+                    nr_docs per row (assumed zero-padding)
+    :return: The DCG@k value
     """
-    if permutation.ndim == 1 and relevance_labels.ndim == 1:
-        return NDCG(k=k, exp=exp).apply((permutation, relevance_labels))[0]
+    if predicted_scores.ndim == 1 and relevance_scores.ndim == 1:
+        return DCG(k=k, exp=exp).apply((predicted_scores, relevance_scores))[0]
+    elif predicted_scores.ndim == 2 and relevance_scores.ndim == 2:
+        if nr_docs is None:
+            xp = cuda.get_array_module(predicted_scores)
+            nr_docs = xp.ones(predicted_scores.shape[0], 'i') * predicted_scores.shape[1]
+        else:
+            nr_docs = nr_docs.data
+        ndcg_func = DCG(k=k, exp=exp)
+        p = predicted_scores.data
+        r = relevance_scores.data
+        res = []
+        for i in range(predicted_scores.shape[0]):
+            p_i = p[i, :nr_docs[i]]
+            r_i = r[i, :nr_docs[i]]
+            res.append(ndcg_func.apply((p_i, r_i))[0])
+        return F.flatten(F.vstack(res))
     else:
-        raise TypeError("ndcg can only be applied to 1-dimensional tensors")
+        raise TypeError("dcg can only be applied to 1 or 2-dimensional "
+                        "tensors")
