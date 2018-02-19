@@ -1,4 +1,4 @@
-from chainer import cuda, FunctionNode, functions as F
+from chainer import cuda, FunctionNode, functions as F, as_variable
 
 
 class DCG(FunctionNode):
@@ -54,7 +54,7 @@ class DCG(FunctionNode):
         return xp.sum(dcg_numerator / dcg_denominator)
 
 
-def dcg(predicted_scores, relevance_scores, k=0, exp=True, nr_docs=None):
+def dcg(predicted_scores, relevance_scores, nr_docs=None, k=0, exp=True):
     """
     Computes the DCG@k for given list of true relevance labels
     (relevance_labels) and given permutation of documents (permutation)
@@ -69,6 +69,8 @@ def dcg(predicted_scores, relevance_scores, k=0, exp=True, nr_docs=None):
                     nr_docs per row (assumed zero-padding)
     :return: The DCG@k value
     """
+    predicted_scores = as_variable(predicted_scores)
+    relevance_scores = as_variable(relevance_scores)
     if predicted_scores.ndim == 1 and relevance_scores.ndim == 1:
         return DCG(k=k, exp=exp).apply((predicted_scores, relevance_scores))[0]
     elif predicted_scores.ndim == 2 and relevance_scores.ndim == 2:
@@ -76,7 +78,7 @@ def dcg(predicted_scores, relevance_scores, k=0, exp=True, nr_docs=None):
             xp = cuda.get_array_module(predicted_scores)
             nr_docs = xp.ones(predicted_scores.shape[0], 'i') * predicted_scores.shape[1]
         else:
-            nr_docs = nr_docs.data
+            nr_docs = as_variable(nr_docs).data
         ndcg_func = DCG(k=k, exp=exp)
         p = predicted_scores.data
         r = relevance_scores.data
