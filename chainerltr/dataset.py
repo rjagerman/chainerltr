@@ -36,6 +36,7 @@ class RankingDataset(_DatasetMixin):
         self.relevance_labels = relevance_labels.astype(_np.int32)
         self.qids = qids.astype(_np.int32)
         self.unique_qids = _np.unique(qids)
+        self.nr_dimensions = self.feature_vectors.shape[1]
 
         # Perform filtering if necessary
         if filter is True:
