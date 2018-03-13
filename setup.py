@@ -15,7 +15,7 @@ setup(
               'test',
               'test.examples',
               'test.loss'],
-    install_requires=['numpy>=1.12.0',
+    install_requires=['numpy>=1.13.0',
                       'chainer>=2.0.0',
                       'scikit-learn>=0.19.1'],
     test_suite='nose.collector',
