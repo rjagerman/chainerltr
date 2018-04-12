@@ -1,4 +1,4 @@
-from chainer import cuda, functions as cf, as_variable
+from chainer import functions as cf, as_variable
 from chainerltr.functions import loginvcumsumexp, permutate2d, argsort,\
     sample_without_replacement
 
