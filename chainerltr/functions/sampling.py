@@ -19,7 +19,8 @@ def sample_without_replacement(p_log, seed=None):
     """
     xp = cuda.get_array_module(p_log)
 
-    # Use the provided seed to sample
+    # If a specific random seed is set, generate a random number generator with
+    # that seed to sample from, otherwise use the global random library
     rng = xp.random
     if seed is not None:
         rng = xp.random.RandomState(seed)
