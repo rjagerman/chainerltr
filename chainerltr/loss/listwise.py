@@ -14,6 +14,9 @@ def listnet(x, t, nr_docs):
     :param t: The target labels
     :type t: chainer.Variable
 
+    :param nr_docs: The number of documents per query
+    :type nr_docs: chainer.Variable
+
     :return: The Top-1 listnet loss
     :rtype: chainer.Variable
     """
@@ -35,6 +38,9 @@ def listmle(x, t, nr_docs):
 
     :param t: The target labels
     :type t: chainer.Variable
+
+    :param nr_docs: The number of documents per query
+    :type nr_docs: chainer.Variable
 
     :return: The loss
     :rtype: chainer.Variable
@@ -62,19 +68,22 @@ def listpl(x, t, nr_docs, α=10.0, seed=None):
     :param t: The target labels
     :type t: chainer.Variable
 
+    :param nr_docs: The number of documents per query
+    :type nr_docs: chainer.Variable
+
     :param α: The temperature parameter of the plackett-luce
     :type α: float
+
+    :param seed: (Re)-seed for random number generator
+    :type seed: int|None
 
     :return: The loss
     :rtype: chainer.Variable
     """
-    if seed is not None:
-        xp = cuda.get_array_module(x)
-        xp.random.seed(seed)
     t, nr_docs = as_variable(t), as_variable(nr_docs)
     t = as_variable(t.data.astype(x.dtype))
     t = cf.log_softmax(t * α)
-    indices = sample_without_replacement(t)
+    indices = sample_without_replacement(t, seed)
 
     x_hat = permutate2d(x, indices)
 
