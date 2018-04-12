@@ -1,4 +1,4 @@
-from chainer import functions as cf, as_variable
+from chainer import cuda, functions as cf, as_variable
 from chainerltr.functions import loginvcumsumexp, permutate2d, argsort,\
     sample_without_replacement
 
@@ -51,7 +51,7 @@ def listmle(x, t, nr_docs):
     return cf.mean(per_sample_loss)
 
 
-def listpl(x, t, nr_docs, α=10.0):
+def listpl(x, t, nr_docs, α=10.0, seed=None):
     """
     The ListPL loss, a stochastic variant of ListMLE that in expectation
     approximates the true ListNet loss.
@@ -68,9 +68,12 @@ def listpl(x, t, nr_docs, α=10.0):
     :return: The loss
     :rtype: chainer.Variable
     """
+    if seed is not None:
+        xp = cuda.get_array_module(x)
+        xp.random.seed(seed)
     t, nr_docs = as_variable(t), as_variable(nr_docs)
     t = as_variable(t.data.astype(x.dtype))
-    t = cf.softmax(t * α, axis=1)
+    t = cf.log_softmax(t * α)
     indices = sample_without_replacement(t)
 
     x_hat = permutate2d(x, indices)

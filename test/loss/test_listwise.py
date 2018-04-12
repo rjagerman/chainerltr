@@ -56,7 +56,7 @@ def test_listpl():
     nr_docs = Variable(np.array([4, 4], dtype='i'))
 
     result = listpl(x, t, nr_docs)
-    assert_almost_equal(result.data, 3.337334054791404)
+    assert_almost_equal(result.data, 3.1702836780279053)
 
 
 def test_listpl_backward():
@@ -67,4 +67,7 @@ def test_listpl_backward():
                            [2, 3, 2, 0]], dtype='i'))
     nr_docs = Variable(np.array([4, 4], dtype='i'))
 
-    gradient_check.check_backward(listpl, (x.data, t.data, nr_docs.data), None)
+    # Modify listpl call so it uses the same random seed (and thus samples
+    # identically) on every call, this is necessary for gradient checking
+    loss_fn = lambda x, t, n: listpl(x, t, n, seed=42)
+    gradient_check.check_backward(loss_fn, (x.data, t.data, nr_docs.data), None)
