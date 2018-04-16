@@ -1,0 +1,1 @@
+from chainerltr.clickmodels.dcm import DependentClickModel
