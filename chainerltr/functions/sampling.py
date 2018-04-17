@@ -5,9 +5,9 @@ def sample_without_replacement(p_log, seed=None):
     """
     Samples a permutation with log-probabilities
 
-    :param p: The log-probabilities (each row's exp(log_p) needs to sum up to
-              one)
-    :type p: chainer.Variable
+    :param p_log: The log-probabilities (each row's exp(log_p) needs to sum up
+                  to one)
+    :type p_log: chainer.Variable
 
     :param seed: The seed for random number generator (default is to use global
                  random number generator)
