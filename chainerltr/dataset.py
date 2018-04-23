@@ -34,6 +34,8 @@ class RankingDataset(_DatasetMixin):
         """
         self.feature_vectors = feature_vectors.astype(_np.float32)
         self.relevance_labels = relevance_labels.astype(_np.int32)
+        self.maximum_relevance = _np.max(self.relevance_labels)
+        self.minimum_relevance = _np.min(self.relevance_labels)
         self.qids = qids.astype(_np.int32)
         self.unique_qids = _np.unique(qids)
         self.nr_dimensions = self.feature_vectors.shape[1]

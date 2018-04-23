@@ -1,10 +1,15 @@
+from chainer import as_variable, cuda
+
+
 class UserBehavior:
     def __init__(self, maximum_relevance=1, minimum_relevance=0):
         self.maximum_relevance = maximum_relevance
         self.minimum_relevance = minimum_relevance
 
     def _scale_relevance(self, relevance_labels):
-        translated = relevance_labels - self.minimum_relevance
+        xp = cuda.get_array_module(relevance_labels)
+        r = as_variable(relevance_labels.data.astype(xp.float))
+        translated = r - self.minimum_relevance
         return translated / (self.maximum_relevance - self.minimum_relevance)
 
     def relevance_probability(self, relevance_labels):

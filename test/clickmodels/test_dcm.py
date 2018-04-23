@@ -9,9 +9,9 @@ from chainerltr.clickmodels.behavior import PerfectBehavior, \
 
 def test_dcm_perfect():
 
-    ranking = as_variable(np.array([[0, 1, 2, 3], [0, 3, 2, 1]], dtype='i'))
+    ranking = as_variable(np.array([[0, 1, 2, 3], [0, 3, 2, 1]], dtype=np.int32))
     labels = as_variable(np.array([[1, 2, 1, 0], [2, 1, 0, 0]], dtype='f'))
-    nr_docs = as_variable(np.array([4, 4]))
+    nr_docs = as_variable(np.array([4, 4], dtype=np.int32))
 
     dcm = DependentClickModel(PerfectBehavior(maximum_relevance=2))
 
@@ -42,9 +42,9 @@ def test_dcm_perfect():
 
 def test_dcm_navigational():
 
-    ranking = as_variable(np.array([[0, 1, 2, 3], [0, 3, 2, 1]], dtype='i'))
+    ranking = as_variable(np.array([[0, 1, 2, 3], [0, 3, 2, 1]], dtype=np.int32))
     labels = as_variable(np.array([[1, 2, 1, 0], [2, 1, 0, 0]], dtype='f'))
-    nr_docs = as_variable(np.array([4, 4]))
+    nr_docs = as_variable(np.array([4, 4], dtype=np.int32))
 
     dcm = DependentClickModel(NavigationalBehavior(maximum_relevance=2))
 
@@ -75,9 +75,9 @@ def test_dcm_navigational():
 
 def test_dcm_informational():
 
-    ranking = as_variable(np.array([[0, 1, 2, 3], [0, 3, 2, 1]], dtype='i'))
+    ranking = as_variable(np.array([[0, 1, 2, 3], [0, 3, 2, 1]], dtype=np.int32))
     labels = as_variable(np.array([[1, 2, 1, 0], [2, 1, 0, 0]], dtype='f'))
-    nr_docs = as_variable(np.array([4, 4]))
+    nr_docs = as_variable(np.array([4, 4], dtype=np.int32))
 
     dcm = DependentClickModel(InformationalBehavior(maximum_relevance=2))
 
@@ -108,9 +108,9 @@ def test_dcm_informational():
 
 def test_dcm_seed():
 
-    ranking = as_variable(np.array([[0, 1, 2, 3], [0, 3, 2, 1]], dtype='i'))
+    ranking = as_variable(np.array([[0, 1, 2, 3], [0, 3, 2, 1]], dtype=np.int32))
     labels = as_variable(np.array([[1, 2, 1, 0], [2, 1, 0, 0]], dtype='f'))
-    nr_docs = as_variable(np.array([4, 4]))
+    nr_docs = as_variable(np.array([4, 4], dtype=np.int32))
 
     dcm = DependentClickModel(PerfectBehavior(maximum_relevance=2))
 

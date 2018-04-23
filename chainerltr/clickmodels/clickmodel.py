@@ -1,18 +1,23 @@
 from chainer import Chain, cuda
 
-from chainerltr.functions import unpad, permutate2d
+from chainerltr.functions import unpad
+from chainerltr.functions.select_items import select_items_per_row
 
 
 class ClickModel(Chain):
-    def __init__(self, behavior):
+    def __init__(self, behavior, k=0):
         """
         Initializes the click model
 
         :param behavior: The user behavior
         :type behavior: chainerltr.clickmodels.behavior.UserBehavior
+
+        :param k: The cut-off point
+        :type k: int
         """
         super().__init__()
         self.behavior = behavior
+        self.k = k
 
     def __call__(self, ranking, relevance, nr_docs, seed=None):
         """
@@ -37,7 +42,9 @@ class ClickModel(Chain):
 
         # Reshuffle the rankings based on nr_docs
         t_action = unpad(ranking, nr_docs)
-        t_relevance = permutate2d(relevance, t_action)
+        t_relevance = select_items_per_row(relevance, t_action)
+        if self.k > 0:
+            t_relevance = t_relevance[:, :self.k]
 
         xp = cuda.get_array_module(relevance)
         rng = xp.random
