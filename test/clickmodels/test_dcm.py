@@ -17,27 +17,11 @@ def test_dcm_perfect():
 
     # Try clicks with different seeds and check results
     assert_allclose(dcm(ranking, labels, nr_docs, 42).data,
-                    np.array([[1, 1, 0, 0], [1, 0, 0, 1]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 43).data,
-                    np.array([[1, 1, 1, 0], [1, 0, 0, 1]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 44).data,
-                    np.array([[0, 1, 0, 0], [1, 0, 0, 1]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 45).data,
-                    np.array([[0, 1, 1, 0], [1, 0, 0, 1]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 46).data,
-                    np.array([[0, 1, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 47).data,
-                    np.array([[1, 1, 0, 0], [1, 0, 0, 1]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 48).data,
                     np.array([[1, 1, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 49).data,
-                    np.array([[1, 1, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 50).data,
-                    np.array([[1, 1, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 51).data,
-                    np.array([[0, 1, 0, 0], [1, 0, 0, 1]]))
     assert_allclose(dcm(ranking, labels, nr_docs, 52).data,
-                    np.array([[0, 1, 0, 0], [1, 0, 0, 1]]))
+                    np.array([[0, 1, 1, 0], [1, 0, 0, 0]]))
+    assert_allclose(dcm(ranking, labels, nr_docs, 53).data,
+                    np.array([[0, 1, 1, 0], [1, 0, 0, 1]]))
 
 
 def test_dcm_navigational():
@@ -50,26 +34,10 @@ def test_dcm_navigational():
 
     # Try clicks with different seeds and check results
     assert_allclose(dcm(ranking, labels, nr_docs, 42).data,
-                    np.array([[1, 0, 0, 0], [0, 0, 0, 1]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 43).data,
-                    np.array([[1, 1, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 44).data,
-                    np.array([[0, 1, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 45).data,
-                    np.array([[0, 1, 1, 0], [1, 0, 0, 1]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 46).data,
-                    np.array([[0, 1, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 47).data,
-                    np.array([[1, 0, 0, 0], [0, 0, 0, 1]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 48).data,
-                    np.array([[1, 1, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 49).data,
                     np.array([[1, 0, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 50).data,
-                    np.array([[1, 1, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 51).data,
-                    np.array([[0, 1, 0, 0], [1, 0, 0, 0]]))
     assert_allclose(dcm(ranking, labels, nr_docs, 52).data,
+                    np.array([[0, 1, 1, 0], [1, 0, 0, 0]]))
+    assert_allclose(dcm(ranking, labels, nr_docs, 53).data,
                     np.array([[0, 1, 0, 0], [1, 0, 0, 0]]))
 
 
@@ -83,26 +51,10 @@ def test_dcm_informational():
 
     # Try clicks with different seeds and check results
     assert_allclose(dcm(ranking, labels, nr_docs, 42).data,
-                    np.array([[1, 0, 0, 0], [0, 1, 0, 1]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 43).data,
-                    np.array([[1, 1, 0, 0], [1, 0, 0, 1]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 44).data,
-                    np.array([[0, 1, 1, 0], [1, 0, 0, 1]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 45).data,
-                    np.array([[0, 1, 1, 0], [1, 0, 0, 1]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 46).data,
-                    np.array([[0, 1, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 47).data,
-                    np.array([[1, 0, 0, 0], [0, 0, 1, 1]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 48).data,
-                    np.array([[1, 1, 0, 0], [1, 1, 1, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 49).data,
-                    np.array([[1, 0, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 50).data,
-                    np.array([[1, 1, 0, 1], [1, 0, 1, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 51).data,
-                    np.array([[0, 1, 1, 0], [1, 0, 0, 0]]))
+                    np.array([[1, 0, 0, 0], [1, 1, 1, 0]]))
     assert_allclose(dcm(ranking, labels, nr_docs, 52).data,
+                    np.array([[0, 1, 1, 0], [1, 0, 1, 0]]))
+    assert_allclose(dcm(ranking, labels, nr_docs, 53).data,
                     np.array([[0, 1, 0, 0], [1, 0, 0, 0]]))
 
 
