@@ -62,13 +62,25 @@ class RankingDataset(_DatasetMixin):
                 self.feature_vectors[mask, :] /= maximum
             self.feature_vectors = _np.nan_to_num(self.feature_vectors)
 
+        # Pre-compute start and end indices for each query
+        self.starts = _np.zeros(len(self.unique_qids), dtype=_np.int32)
+        self.ends = _np.zeros(len(self.unique_qids), dtype=_np.int32)
+        self.nr_docs = _np.zeros(len(self.unique_qids), dtype=_np.int32)
+        for i in range(len(self.unique_qids)):
+            where = _np.argwhere(self.qids == self.unique_qids[i])
+            self.starts[i] = _np.min(where)
+            self.ends[i] = _np.max(where) + 1
+            self.nr_docs[i] = where.shape[0]
+
     def __len__(self):
         return self.nr_samples
 
     def get_example(self, i):
-        xs = self.feature_vectors[self.qids == self.unique_qids[i]]
-        ys = self.relevance_labels[self.qids == self.unique_qids[i]]
-        nr_docs = ys.shape[0]
+        s = self.starts[i]
+        e = self.ends[i]
+        xs = self.feature_vectors[s:e]
+        ys = self.relevance_labels[s:e]
+        nr_docs = self.nr_docs[i]
         return xs, ys, nr_docs
 
 
