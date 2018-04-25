@@ -36,7 +36,7 @@ def test_dcm_navigational():
     assert_allclose(dcm(ranking, labels, nr_docs, 42).data,
                     np.array([[1, 0, 0, 0], [1, 0, 0, 0]]))
     assert_allclose(dcm(ranking, labels, nr_docs, 52).data,
-                    np.array([[0, 1, 1, 0], [1, 0, 0, 0]]))
+                    np.array([[0, 1, 0, 0], [1, 0, 0, 0]]))
     assert_allclose(dcm(ranking, labels, nr_docs, 53).data,
                     np.array([[0, 1, 0, 0], [1, 0, 0, 0]]))
 
@@ -53,9 +53,9 @@ def test_dcm_informational():
     assert_allclose(dcm(ranking, labels, nr_docs, 42).data,
                     np.array([[1, 0, 0, 0], [1, 1, 1, 0]]))
     assert_allclose(dcm(ranking, labels, nr_docs, 52).data,
-                    np.array([[0, 1, 1, 0], [1, 0, 1, 0]]))
+                    np.array([[0, 1, 0, 0], [1, 0, 1, 0]]))
     assert_allclose(dcm(ranking, labels, nr_docs, 53).data,
-                    np.array([[0, 1, 0, 0], [1, 0, 0, 0]]))
+                    np.array([[0, 1, 1, 1], [1, 0, 0, 1]]))
 
 
 def test_dcm_seed():
