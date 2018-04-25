@@ -40,7 +40,6 @@ class ClickModel(Chain):
         :rtype: chainer.Variable
         """
 
-        # Reshuffle the rankings based on nr_docs
         t_action = unpad(ranking, nr_docs)
         t_relevance = select_items_per_row(relevance, t_action)
         if self.k > 0:
