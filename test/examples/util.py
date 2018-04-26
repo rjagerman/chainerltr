@@ -1,5 +1,5 @@
 import numpy as np
-from chainer import Chain, report, links as L, functions as F
+from chainer import Chain, report, links as L, functions as F, as_variable, cuda
 from chainer.iterators import SerialIterator
 from chainer.optimizers import Adam
 from chainer.training import Trainer, StandardUpdater, extensions
@@ -18,7 +18,9 @@ class Loss(Chain):
         prediction = self.ranker(xs)
         loss = self.loss_fn(prediction, ys, nr_docs)
         report({"loss": loss})
-        ndcg_score = ndcg(prediction, ys, nr_docs)
+        xp = cuda.get_array_module(prediction)
+        ranking = as_variable(xp.fliplr(xp.argsort(prediction.data, axis=1)))
+        ndcg_score = ndcg(ranking, as_variable(ys), as_variable(nr_docs))
         report({"ndcg": F.mean(ndcg_score)})
         return loss
 

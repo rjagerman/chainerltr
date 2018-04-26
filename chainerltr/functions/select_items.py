@@ -18,10 +18,10 @@ def select_items_per_row(values2d, idx2d):
     xp = cuda.get_array_module(values2d, idx2d)
     rows = values2d.shape[0]
     cols = values2d.shape[1]
-    flatten_row_range = F.reshape(xp.arange(0, rows).astype(idx2d.dtype), (rows, 1))
-    flatten_addition = F.broadcast_to(flatten_row_range, idx2d.shape) * cols
 
-    flattened_idx = F.flatten(idx2d) + F.flatten(flatten_addition)
+    flattened_idx = xp.ravel(idx2d.data) + xp.repeat(
+        xp.arange(0, rows * cols, cols), cols)
+
     flattened_values = F.flatten(values2d)
-    flattened_values = flattened_values[flattened_idx.data]
-    return F.reshape(flattened_values, idx2d.shape)
+    flattened_values = flattened_values[flattened_idx]
+    return F.reshape(flattened_values, values2d.shape)

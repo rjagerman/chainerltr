@@ -1,4 +1,5 @@
-from chainer import cuda, FunctionNode, functions as F, as_variable
+from chainer import cuda, FunctionNode
+from chainerltr.functions import select_items_per_row, unpad
 
 
 class DCG(FunctionNode):
@@ -8,32 +9,33 @@ class DCG(FunctionNode):
 
     def forward(self, inputs):
         xp = cuda.get_array_module(*inputs)
-        y, t = inputs
-
-        # Assert arrays have the same shape
-        if t.shape != y.shape:
-            raise ValueError("Input arrays have different shapes")
+        ranking, relevance_labels = inputs
 
         # Computing nDCG on empty array should just return 0.0
-        if t.shape[0] == 0:
-            return xp.asarray(0.0),
+        if ranking.shape[1] == 0:
+            return xp.zeros(ranking.shape[0]),
 
-        # Compute best_indices by sorting the relevance labels and then flipping
-        predicted_indices = xp.flip(xp.argsort(y), axis=0)
+        # Top-k cutoff
+        last = ranking.shape[1]
+        if self.k > 0:
+            last = min(self.k, last)
 
-        # Select items based on permutations to get relevance grades sorted
-        predicted_relevance = t[predicted_indices]
+        # For the rankings, compute the relevance labels in order
+        relevance = select_items_per_row(relevance_labels, ranking)
+        relevance = relevance[:, :last].data.astype(dtype=xp.float32)
 
-        # Compute needed statistics
-        length = predicted_relevance.shape[0]
-        last = min(self.k, length)
-        if last < 1:
-            last = length
+        # Compute numerator of DCG formula
+        if self.exp:
+            numerator = (2.0 ** relevance) - 1.0
+        else:
+            numerator = relevance
 
-        # Compute regular DCG
-        dcg = self._dcg(predicted_relevance, xp, last)
+        # Compute denominator of DCG formula
+        arange = xp.broadcast_to(2.0 + xp.arange(relevance.shape[1]),
+                                 relevance.shape)
+        denominator = xp.log2(arange)
 
-        return xp.asarray(dcg),
+        return xp.asarray(xp.sum(numerator / denominator, axis=1)),
 
     def _dcg(self, relevance, xp, last):
         """
@@ -54,40 +56,39 @@ class DCG(FunctionNode):
         return xp.sum(dcg_numerator / dcg_denominator)
 
 
-def dcg(predicted_scores, relevance_scores, nr_docs=None, k=0, exp=True):
+def dcg(ranking, relevance_scores, nr_docs=None, k=0, exp=True):
     """
     Computes the DCG@k for given list of true relevance labels
     (relevance_labels) and given permutation of documents (permutation)
 
     :param predicted_scores: The predicted scores for the document
+    :type predicted_scores: chainer.Variable
+
     :param relevance_scores: The ground truth relevance labels
+    :type relevance_scores: chainer.Variable
+
     :param k: The cut-off point (if set to smaller or equal to 0, it does not
               cut-off)
+    :type k: int
+
     :param exp: Set to true to use the exponential variant of nDCG which
                 has a stronger emphasis on retrieving relevant documents
-    :param nr_docs: When using 2d-arrays you need to specify a vector of the
-                    nr_docs per row (assumed zero-padding)
+    :type exp: bool
+
+    :param nr_docs: A vector of the nr_docs per row
+    :type nr_docs: chainer.Variable
+
     :return: The DCG@k value
+    :rtype: chainer.Variable
     """
-    predicted_scores = as_variable(predicted_scores)
-    relevance_scores = as_variable(relevance_scores)
-    if predicted_scores.ndim == 1 and relevance_scores.ndim == 1:
-        return DCG(k=k, exp=exp).apply((predicted_scores, relevance_scores))[0]
-    elif predicted_scores.ndim == 2 and relevance_scores.ndim == 2:
-        if nr_docs is None:
-            xp = cuda.get_array_module(predicted_scores)
-            nr_docs = xp.ones(predicted_scores.shape[0], 'i') * predicted_scores.shape[1]
-        else:
-            nr_docs = as_variable(nr_docs).data
-        ndcg_func = DCG(k=k, exp=exp)
-        p = predicted_scores.data
-        r = relevance_scores.data
-        res = []
-        for i in range(predicted_scores.shape[0]):
-            p_i = p[i, :nr_docs[i]]
-            r_i = r[i, :nr_docs[i]]
-            res.append(ndcg_func.apply((p_i, r_i))[0])
-        return F.flatten(F.vstack(res))
-    else:
-        raise TypeError("dcg can only be applied to 1 or 2-dimensional "
-                        "tensors")
+    # Assert arrays have the same shape
+    if ranking.shape != relevance_scores.shape:
+        raise ValueError("Input arrays have different shapes")
+
+    if nr_docs is not None:
+        if nr_docs.shape[0] != ranking.shape[0]:
+            raise ValueError(f"Nr docs has an incorrect length (expected "
+                             f"{ranking.shape[0]}, but got {nr_docs.shape[0]}")
+        ranking = unpad(ranking, nr_docs)
+
+    return DCG(k=k, exp=exp).apply((ranking, relevance_scores))[0]
