@@ -1,6 +1,6 @@
 from chainer import functions as cf, as_variable
-from chainerltr.functions import loginvcumsumexp, permutate2d, argsort,\
-    sample_without_replacement
+from chainerltr.functions import loginvcumsumexp, argsort, \
+    sample_without_replacement, select_items_per_row
 
 
 def listnet(x, t, nr_docs):
@@ -49,7 +49,7 @@ def listmle(x, t, nr_docs):
 
     # Get the ground truth by sorting activations by the relevance labels
     indices = argsort(t, axis=1)
-    x_hat = permutate2d(x, cf.flip(indices, axis=1))
+    x_hat = select_items_per_row(x, cf.flip(indices, axis=1))
 
     # Compute MLE loss
     final = loginvcumsumexp(x_hat)
@@ -85,7 +85,7 @@ def listpl(x, t, nr_docs, α=10.0, seed=None):
     t = cf.log_softmax(t * α)
     indices = sample_without_replacement(t, seed)
 
-    x_hat = permutate2d(x, indices)
+    x_hat = select_items_per_row(x, indices)
 
     # Compute MLE loss
     final = loginvcumsumexp(x_hat)

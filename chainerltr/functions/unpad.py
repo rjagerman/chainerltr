@@ -1,5 +1,5 @@
 from chainer import as_variable, cuda
-from chainerltr.functions import permutate2d
+from chainerltr.functions import select_items_per_row
 
 
 def unpad(permutation, nr_docs):
@@ -38,4 +38,4 @@ def unpad(permutation, nr_docs):
 
     indices = arange_1_s + arange_2_s
 
-    return permutate2d(permutation, as_variable(indices))
+    return select_items_per_row(permutation, as_variable(indices))

@@ -1,5 +1,5 @@
 import numpy as np
-from nose.tools import assert_equal, assert_almost_equal
+from nose.tools import assert_almost_equal
 from chainer import Variable, gradient_check
 from chainerltr.loss.pairwise import ranknet
 
