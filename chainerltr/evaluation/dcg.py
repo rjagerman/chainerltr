@@ -1,4 +1,4 @@
-from chainer import cuda, FunctionNode
+from chainer import cuda, FunctionNode, as_variable
 from chainerltr.functions import select_items_per_row, unpad
 
 
@@ -21,7 +21,8 @@ class DCG(FunctionNode):
             last = min(self.k, last)
 
         # For the rankings, compute the relevance labels in order
-        relevance = select_items_per_row(relevance_labels, ranking)
+        relevance = select_items_per_row(as_variable(relevance_labels),
+                                         as_variable(ranking))
         relevance = relevance[:, :last].data.astype(dtype=xp.float32)
 
         # Compute numerator of DCG formula
@@ -36,24 +37,6 @@ class DCG(FunctionNode):
         denominator = xp.log2(arange)
 
         return xp.asarray(xp.sum(numerator / denominator, axis=1)),
-
-    def _dcg(self, relevance, xp, last):
-        """
-        Computes the DCG for given set of sorted relevance scores
-
-        :param relevance: The relevance scores
-        :param xp: :mod:`cupy` or :mod:`numpy`
-        :param arange: A numeric range from 1...length
-        :param last: The last index to use
-        :return: The dcg score
-        """
-        arange = 1.0 + xp.arange(relevance.shape[0])
-        if self.exp:
-            dcg_numerator = (2.0 ** relevance[:last]) - 1.0
-        else:
-            dcg_numerator = relevance[:last]
-        dcg_denominator = xp.log2(arange[:last] + 1)
-        return xp.sum(dcg_numerator / dcg_denominator)
 
 
 def dcg(ranking, relevance_scores, nr_docs=None, k=0, exp=True):
