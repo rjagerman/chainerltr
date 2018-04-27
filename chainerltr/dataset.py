@@ -100,7 +100,7 @@ def zeropad_concat(batch, device=None):
     return concat_examples(batch, device, 0.0)
 
 
-def load(file_path, cache_path=None, normalize=False, filter=False):
+def load(file_path, cache_path=None, normalize=False, filter=False, verbose=0):
     """
     Loads from an SVMrank format into a dense data set
 
@@ -116,6 +116,9 @@ def load(file_path, cache_path=None, normalize=False, filter=False):
     :param filter: Whether to filter results
     :type filter: bool
 
+    :param verbose: Whether to print extra information during the call
+    :type verbose: int
+
     :return: The loaded data set
     :rtype: chainerltr.dataset.RankingDataset
     """
@@ -125,7 +128,7 @@ def load(file_path, cache_path=None, normalize=False, filter=False):
         return RankingDataset(x, y, qids, filter=filter, normalize=normalize)
 
     mem = _Memory(cache_path)
-    @mem.cache
+    @mem.cache(verbose=verbose)
     def _cached_load(file_path, filter, normalize):
         return _load(file_path, filter, normalize)
     return _cached_load(file_path, filter, normalize)
