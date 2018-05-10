@@ -76,6 +76,27 @@ def test_empty_ndcg():
     assert_allclose(ndcg(p, y).data, 0.0)
 
 
+def test_zero_ndcg_at_all():
+    p = Variable(np.array([[4, 3, 2, 1, 0]]))
+    y = Variable(np.array([[0, 0, 0, 0, 0]]))
+    expected = np.array([[0., 0., 0., 0., 0.]])
+    assert_allclose(ndcg(p, y, k=-1).data, expected)
+
+
+def test_perfect_ndcg_at_all():
+    p = Variable(np.array([[0, 1, 2, 3, 4]]))
+    y = Variable(np.array([[2, 2, 1, 1, 0]]))
+    expected = np.array([[1., 1., 1., 1., 1.]])
+    assert_allclose(ndcg(p, y, k=-1).data, expected)
+
+
+def test_worst_ndcg_at_all():
+    p = Variable(np.array([[4, 3, 2, 1, 0]]))
+    y = Variable(np.array([[2, 2, 1, 1, 0]]))
+    expected = np.array([[0., 0.12895094, 0.20971147, 0.41606828, 0.61535827]])
+    assert_allclose(ndcg(p, y, k=-1).data, expected)
+
+
 @raises(ValueError)
 def test_wrongsize_ndcg():
     p = Variable(np.array([[2, 1, 0]]))

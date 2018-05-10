@@ -36,7 +36,10 @@ class DCG(FunctionNode):
                                  relevance.shape)
         denominator = xp.log2(arange)
 
-        return xp.asarray(xp.sum(numerator / denominator, axis=1)),
+        if self.k >= 0:
+            return xp.asarray(xp.sum(numerator / denominator, axis=1)),
+        else:
+            return xp.asarray(xp.cumsum(numerator / denominator, axis=1)),
 
 
 def dcg(ranking, relevance_scores, nr_docs=None, k=0, exp=True):

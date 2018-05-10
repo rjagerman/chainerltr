@@ -76,6 +76,20 @@ def test_empty_dcg():
     assert_allclose(dcg(p, y).data, 0.0)
 
 
+def test_perfect_dcg_at_all():
+    p = Variable(np.array([[0, 1, 2, 3, 4]]))
+    y = Variable(np.array([[2, 2, 1, 1, 0]]))
+    expected = np.array([[3., 4.89278926, 5.39278926, 5.82346582, 5.82346582]])
+    assert_allclose(dcg(p, y, k=-1).data, expected)
+
+
+def test_worst_dcg_at_all():
+    p = Variable(np.array([[4, 3, 2, 1, 0]]))
+    y = Variable(np.array([[2, 2, 1, 1, 0]]))
+    expected = np.array([[0., 0.63092975, 1.13092975, 2.42295943, 3.58351785]])
+    assert_allclose(dcg(p, y, k=-1).data, expected)
+
+
 @raises(ValueError)
 def test_wrongsize_dcg():
     p = Variable(np.array([[2, 1, 0]]))
