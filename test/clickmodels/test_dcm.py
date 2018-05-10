@@ -16,11 +16,14 @@ def test_dcm_perfect():
     dcm = DependentClickModel(PerfectBehavior(maximum_relevance=2))
 
     # Try clicks with different seeds and check results
-    assert_allclose(dcm(ranking, labels, nr_docs, 42).data,
+    rng = np.random.RandomState(42)
+    assert_allclose(dcm(ranking, labels, nr_docs, rng).data,
                     np.array([[1, 1, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 52).data,
+    rng = np.random.RandomState(52)
+    assert_allclose(dcm(ranking, labels, nr_docs, rng).data,
                     np.array([[0, 1, 1, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 53).data,
+    rng = np.random.RandomState(53)
+    assert_allclose(dcm(ranking, labels, nr_docs, rng).data,
                     np.array([[0, 1, 1, 0], [1, 0, 0, 1]]))
 
 
@@ -33,11 +36,14 @@ def test_dcm_navigational():
     dcm = DependentClickModel(NavigationalBehavior(maximum_relevance=2))
 
     # Try clicks with different seeds and check results
-    assert_allclose(dcm(ranking, labels, nr_docs, 42).data,
+    rng = np.random.RandomState(42)
+    assert_allclose(dcm(ranking, labels, nr_docs, rng).data,
                     np.array([[1, 0, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 52).data,
+    rng = np.random.RandomState(52)
+    assert_allclose(dcm(ranking, labels, nr_docs, rng).data,
                     np.array([[0, 1, 0, 0], [1, 0, 0, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 53).data,
+    rng = np.random.RandomState(53)
+    assert_allclose(dcm(ranking, labels, nr_docs, rng).data,
                     np.array([[0, 1, 0, 0], [1, 0, 0, 0]]))
 
 
@@ -50,11 +56,14 @@ def test_dcm_informational():
     dcm = DependentClickModel(InformationalBehavior(maximum_relevance=2))
 
     # Try clicks with different seeds and check results
-    assert_allclose(dcm(ranking, labels, nr_docs, 42).data,
+    rng = np.random.RandomState(42)
+    assert_allclose(dcm(ranking, labels, nr_docs, rng).data,
                     np.array([[1, 0, 0, 0], [1, 1, 1, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 52).data,
+    rng = np.random.RandomState(52)
+    assert_allclose(dcm(ranking, labels, nr_docs, rng).data,
                     np.array([[0, 1, 0, 0], [1, 0, 1, 0]]))
-    assert_allclose(dcm(ranking, labels, nr_docs, 53).data,
+    rng = np.random.RandomState(53)
+    assert_allclose(dcm(ranking, labels, nr_docs, rng).data,
                     np.array([[0, 1, 1, 1], [1, 0, 0, 1]]))
 
 
@@ -68,12 +77,14 @@ def test_dcm_seed():
 
     np.random.seed(42)
     different_without_seed = dcm(ranking, labels, nr_docs).data
-    different_with_seed = dcm(ranking, labels, nr_docs, 42).data
+    rng = np.random.RandomState(42)
+    different_with_seed = dcm(ranking, labels, nr_docs, rng).data
     assert_allclose(different_without_seed, different_with_seed)
 
     np.random.seed(42)
     different_without_seed = dcm(ranking, labels, nr_docs).data
-    different_with_seed = dcm(ranking, labels, nr_docs, 43).data
+    rng = np.random.RandomState(43)
+    different_with_seed = dcm(ranking, labels, nr_docs, rng).data
 
     assert not np.array_equal(different_without_seed, different_with_seed)
 

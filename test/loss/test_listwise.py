@@ -69,5 +69,6 @@ def test_listpl_backward():
 
     # Modify listpl call so it uses the same random seed (and thus samples
     # identically) on every call, this is necessary for gradient checking
-    loss_fn = lambda x, t, n: listpl(x, t, n, seed=42)
+    rng = np.random.RandomState(42)
+    loss_fn = lambda x, t, n: listpl(x, t, n, rng=rng, seed=42)
     gradient_check.check_backward(loss_fn, (x.data, t.data, nr_docs.data), None)

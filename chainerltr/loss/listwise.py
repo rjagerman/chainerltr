@@ -57,7 +57,7 @@ def listmle(x, t, nr_docs):
     return cf.mean(per_sample_loss)
 
 
-def listpl(x, t, nr_docs, α=10.0, seed=None):
+def listpl(x, t, nr_docs, α=10.0, rng=None, seed=None):
     """
     The ListPL loss, a stochastic variant of ListMLE that in expectation
     approximates the true ListNet loss.
@@ -74,7 +74,10 @@ def listpl(x, t, nr_docs, α=10.0, seed=None):
     :param α: The temperature parameter of the plackett-luce
     :type α: float
 
-    :param seed: (Re)-seed for random number generator
+    :param rng: The random number generator
+    :type rng: numpy.random.RandomState|cupy.random.RandomState|None
+
+    :param seed: The seed to use on the random number generator
     :type seed: int|None
 
     :return: The loss
@@ -83,7 +86,7 @@ def listpl(x, t, nr_docs, α=10.0, seed=None):
     t, nr_docs = as_variable(t), as_variable(nr_docs)
     t = as_variable(t.data.astype(x.dtype))
     t = cf.log_softmax(t * α)
-    indices = sample_without_replacement(t, seed)
+    indices = sample_without_replacement(t, rng, seed)
 
     x_hat = select_items_per_row(x, indices)
 
