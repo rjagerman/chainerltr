@@ -9,7 +9,7 @@ from chainerltr.clickmodels.clickmodel import ClickModel
 
 
 class MockClickModel(ClickModel):
-    def _click_vector(self, relevance, nr_docs, rng):
+    def _click_vector(self, relevance, nr_docs):
         return relevance
 
 

@@ -7,7 +7,7 @@ class DependentClickModel(ClickModel):
     """
     A dependent click model with an efficient GPU-accelerated implementation.
     """
-    def _click_vector(self, relevance, nr_docs, rng):
+    def _click_vector(self, relevance, nr_docs):
         xp = cuda.get_array_module(relevance)
 
         # Get relevance and stop probabilities
@@ -15,8 +15,8 @@ class DependentClickModel(ClickModel):
         s_prob = 1.0 - self.behavior.stop_probability(relevance).data
 
         # Generate random samples
-        uniform = rng.uniform(size=r_prob.shape)
-        uniform2 = rng.uniform(size=r_prob.shape)
+        uniform = xp.random.uniform(size=r_prob.shape)
+        uniform2 = xp.random.uniform(size=r_prob.shape)
 
         # Generate independent clicks
         clicks = 1.0 * (r_prob >= uniform)

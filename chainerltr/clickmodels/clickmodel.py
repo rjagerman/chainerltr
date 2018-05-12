@@ -19,7 +19,7 @@ class ClickModel(Chain):
         self.behavior = behavior
         self.k = k
 
-    def __call__(self, ranking, relevance, nr_docs, rng=None):
+    def __call__(self, ranking, relevance, nr_docs):
         """
         Generates a click vector based on given action (ranking), truth labels
         (relevance scores) and number of documents
@@ -45,13 +45,9 @@ class ClickModel(Chain):
         if self.k > 0:
             t_relevance = t_relevance[:, :self.k]
 
-        if rng is None:
-            xp = cuda.get_array_module(relevance)
-            rng = xp.random
+        return self._click_vector(t_relevance, nr_docs)
 
-        return self._click_vector(t_relevance, nr_docs, rng)
-
-    def _click_vector(self, relevance, nr_docs, rng):
+    def _click_vector(self, relevance, nr_docs):
         """
         Generates a vector of clicks (1.0 or 0.0) based on given ranking of
         relevance probabilities.
@@ -61,8 +57,6 @@ class ClickModel(Chain):
 
         :param nr_docs: The number of documents for each row
         :type nr_docs: chainer.Variable
-
-        :param rng: Random number generator module
 
         :return: The click vector
         :rtype: chainer.Variable

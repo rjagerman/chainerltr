@@ -1,7 +1,7 @@
 from chainer import cuda
 
 
-def sample_without_replacement(p_log, rng=None, seed=None):
+def sample_without_replacement(p_log):
     """
     Samples a permutation with log-probabilities
 
@@ -19,18 +19,11 @@ def sample_without_replacement(p_log, rng=None, seed=None):
     """
     xp = cuda.get_array_module(p_log)
 
-    # If a specific random seed is set, generate a random number generator with
-    # that seed to sample from, otherwise use the global random library
-    if rng is None:
-        rng = xp.random
-    if seed is not None:
-        rng.seed(seed)
-
     # This uses reservoir sampling, which comes down to doing
     # Uniform(0, 1) ^ (1 / p) and then sorting by the resulting values. The
     # following implementation is a numerically stable variant that operates in
     # log-space and uses GPU-accelerated operations.
-    u = rng.uniform(0.0, 1.0, p_log.shape)
+    u = xp.random.uniform(0.0, 1.0, p_log.shape)
     r = xp.log(-xp.log(u)) - p_log.data
     s = xp.argsort(r, axis=1)
     return s
