@@ -1,5 +1,5 @@
 from chainer import functions as cf, as_variable
-from chainerltr.functions import loginvcumsumexp, argsort, \
+from chainerltr.functions import logcumsumexp, argsort, \
     sample_without_replacement, select_items_per_row
 
 
@@ -52,7 +52,7 @@ def listmle(x, t, nr_docs):
     x_hat = select_items_per_row(x, cf.flip(indices, axis=1))
 
     # Compute MLE loss
-    final = loginvcumsumexp(x_hat)
+    final = logcumsumexp(x_hat)
     per_sample_loss = cf.sum(final - x_hat, axis=1)
     return cf.mean(per_sample_loss)
 
@@ -91,6 +91,6 @@ def listpl(x, t, nr_docs, α=10.0, rng=None, seed=None):
     x_hat = select_items_per_row(x, indices)
 
     # Compute MLE loss
-    final = loginvcumsumexp(x_hat)
+    final = logcumsumexp(x_hat)
     per_sample_loss = cf.sum(final - x_hat, axis=1)
     return cf.mean(per_sample_loss)
