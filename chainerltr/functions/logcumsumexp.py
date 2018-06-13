@@ -44,8 +44,8 @@ class LogCumSumExp(function_node.FunctionNode):
         ys = xp.reshape(y.data, (y.shape[0], y.shape[1], 1))
         ys = xp.broadcast_to(ys, (y.shape[0], y.shape[1], y.shape[1]))
 
-        triu = xp.broadcast_to(xp.triu(xp.ones((ys.shape[1], ys.shape[2]))),
-                               ys.shape)
+        triu = xp.cumsum(xp.eye(ys.shape[1]), axis=1)
+        triu = xp.broadcast_to(triu, ys.shape)
 
         gx = gy * xp.sum(xp.exp(xs - ys) * triu, axis=1)
         return gx,
