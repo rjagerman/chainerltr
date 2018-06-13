@@ -26,7 +26,7 @@ class LogCumSumExp(function_node.FunctionNode):
         y = x - m
         xp.exp(y, out=y)
         y = xp.fliplr(y)
-        y_sum = y.cumsum(axis=1)
+        y_sum = xp.cumsum(y, axis=1)
         y_sum = xp.fliplr(y_sum)
         y = xp.asarray(xp.log(y_sum) + xp.broadcast_to(m, y_sum.shape))
         return y,
