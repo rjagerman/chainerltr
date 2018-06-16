@@ -11,9 +11,9 @@ class RankingDataset(_DatasetMixin):
     def __init__(self, feature_vectors, relevance_labels, qids, nr_samples=None,
                  filter=False, normalize=False):
         """
-        :param feature_vectors: The numpy 3d array of samples (query, doc,
+        :param feature_vectors: The numpy 2d array of samples ((query, doc),
                                 feature)
-        :type feature_vectors: scipy.sparse.lil.lil_matrix
+        :type feature_vectors: numpy.ndarray
 
         :param relevance_labels: The numpy array relevance labels
         :type relevance_labels: numpy.ndarray
