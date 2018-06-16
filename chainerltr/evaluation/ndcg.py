@@ -1,4 +1,5 @@
-from chainer import cuda, as_variable
+from chainer import as_variable
+from chainer.backends import cuda
 from chainerltr.evaluation.dcg import dcg
 
 
@@ -7,15 +8,26 @@ def ndcg(ranking, relevance_scores, nr_docs=None, k=0, exp=True):
     Computes the nDCG@k for given list of true relevance labels
     (relevance_labels) and given permutation of documents (permutation)
 
-    :param ranking: The ranking of documents
+    :param ranking: The ranking of the documents
+    :type ranking: chainer.Variable
+
     :param relevance_scores: The ground truth relevance labels
-    :param k: The cut-off point (if set to smaller or equal to 0, it does not
-              cut-off)
-    :param exp: Set to true to use the exponential variant of nDCG which
-                has a stronger emphasis on retrieving relevant documents
-    :param nr_docs: When using 2d-arrays you need to specify a vector of the
-                    nr_docs per row (assumed zero-padding)
+    :type relevance_scores: chainer.Variable
+
+    :param nr_docs: A vector of the nr_docs per row
+    :type nr_docs: chainer.Variable
+
+    :param k: The cut-off point (if set to 0, it does not cut-off, if set to
+              smaller than 0, it computes all possible cut-offs and returns an
+              array)
+    :type k: int
+
+    :param exp: Set to true to use the exponential variant of nDCG which has a
+                stronger emphasis on retrieving relevant documents
+    :type exp: bool
+
     :return: The nDCG@k value
+    :rtype: chainer.Variable
     """
     xp = cuda.get_array_module(relevance_scores)
     optimal_ranking = as_variable(xp.fliplr(xp.argsort(relevance_scores.data,

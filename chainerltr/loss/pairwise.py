@@ -1,4 +1,4 @@
-from chainer import Variable, functions as cf, as_variable
+from chainer import functions as cf, as_variable
 
 
 def ranknet(x, t, nr_docs):

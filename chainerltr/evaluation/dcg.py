@@ -1,4 +1,5 @@
-from chainer import cuda, FunctionNode, as_variable
+from chainer import FunctionNode, as_variable
+from chainer.backends import cuda
 from chainerltr.functions import select_items_per_row, unpad
 
 
@@ -47,18 +48,19 @@ def dcg(ranking, relevance_scores, nr_docs=None, k=0, exp=True):
     Computes the DCG@k for given list of true relevance labels
     (relevance_labels) and given permutation of documents (permutation)
 
-    :param predicted_scores: The predicted scores for the document
-    :type predicted_scores: chainer.Variable
+    :param ranking: The ranking of the documents
+    :type ranking: chainer.Variable
 
     :param relevance_scores: The ground truth relevance labels
     :type relevance_scores: chainer.Variable
 
-    :param k: The cut-off point (if set to smaller or equal to 0, it does not
-              cut-off)
+    :param k: The cut-off point (if set to 0, it does not cut-off, if set to
+              smaller than 0, it computes all possible cut-offs and returns an
+              array)
     :type k: int
 
-    :param exp: Set to true to use the exponential variant of nDCG which
-                has a stronger emphasis on retrieving relevant documents
+    :param exp: Set to true to use the exponential variant of DCG which has a
+                stronger emphasis on retrieving relevant documents
     :type exp: bool
 
     :param nr_docs: A vector of the nr_docs per row

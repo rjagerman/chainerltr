@@ -52,8 +52,7 @@ def listmle(x, t, nr_docs):
     x_hat = select_items_per_row(x, cf.flip(indices, axis=1))
 
     # Compute MLE loss
-    final = logcumsumexp(x_hat)
-    per_sample_loss = cf.sum(final - x_hat, axis=1)
+    per_sample_loss = -cf.sum(x_hat - logcumsumexp(x_hat), axis=1)
     return cf.mean(per_sample_loss)
 
 
@@ -85,6 +84,5 @@ def listpl(x, t, nr_docs, α=10.0):
     x_hat = select_items_per_row(x, indices)
 
     # Compute MLE loss
-    final = logcumsumexp(x_hat)
-    per_sample_loss = cf.sum(final - x_hat, axis=1)
+    per_sample_loss = -cf.sum(x_hat - logcumsumexp(x_hat), axis=1)
     return cf.mean(per_sample_loss)

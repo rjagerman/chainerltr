@@ -1,5 +1,5 @@
-from chainer import cuda
 from chainer import function
+from chainer.backends import cuda
 from chainer.utils import type_check
 
 

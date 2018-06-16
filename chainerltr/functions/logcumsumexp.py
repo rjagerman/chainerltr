@@ -58,10 +58,10 @@ def logcumsumexp(x):
 
     .. math::
 
-       y_i = \\log\\left(\\sum_j \\exp(x_{ij})\\right)
+       y_i = \\log\\left(\\sum_{j=i}^n \\exp(x_{j})\\right)
 
     Args:
-        x (~chainer.Variable): Elements to log-sum-exp.
+        x (~chainer.Variable): Elements to log-cumsum-exp.
         axis (None, int, or tuple of int): Axis which a sum is performed.
             The default (axis = None) is perform a sum over all the dimensions
             of the input array.

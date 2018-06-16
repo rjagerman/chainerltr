@@ -1,4 +1,5 @@
-from chainer import as_variable, cuda
+from chainer import as_variable
+from chainer.backends import cuda
 from chainerltr.functions import select_items_per_row
 
 
