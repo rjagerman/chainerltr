@@ -67,16 +67,32 @@ class PerfectBehavior(UserBehavior):
 
 class NavigationalBehavior(UserBehavior):
     def relevance_probability(self, relevance_labels):
+        if self.minimum_relevance == 0 and self.maximum_relevance == 4:
+            r = relevance_labels.data
+            r = (r == 0.0) * 0.05 + (r == 1.0) * 0.3 + (r == 2.0) * 0.5 + (r == 3.0) * 0.7 + (r == 4) * 0.95
+            return as_variable(r)
         return self._scale_relevance(relevance_labels) * 0.9 + 0.05
 
     def stop_probability(self, relevance_labels):
+        if self.minimum_relevance == 0 and self.maximum_relevance == 4:
+            r = relevance_labels.data
+            r = (r == 0.0) * 0.2 + (r == 1.0) * 0.3 + (r == 2.0) * 0.5 + (r == 3.0) * 0.7 + (r == 4) * 0.9
+            return as_variable(r)
         return self._scale_relevance(relevance_labels) * 0.7 + 0.2
 
 
 class InformationalBehavior(UserBehavior):
     def relevance_probability(self, relevance_labels):
+        if self.minimum_relevance == 0 and self.maximum_relevance == 4:
+            r = relevance_labels.data
+            r = (r == 0.0) * 0.4 + (r == 1.0) * 0.6 + (r == 2.0) * 0.7 + (r == 3.0) * 0.8 + (r == 4) * 0.9
+            return as_variable(r)
         return self._scale_relevance(relevance_labels) * 0.5 + 0.4
 
     def stop_probability(self, relevance_labels):
+        if self.minimum_relevance == 0 and self.maximum_relevance == 4:
+            r = relevance_labels.data
+            r = (r == 0.0) * 0.1 + (r == 1.0) * 0.2 + (r == 2.0) * 0.3 + (r == 3.0) * 0.4 + (r == 4) * 0.5
+            return as_variable(r)
         return self._scale_relevance(relevance_labels) * 0.4 + 0.1
 
